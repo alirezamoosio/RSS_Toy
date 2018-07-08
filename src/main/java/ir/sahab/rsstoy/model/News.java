@@ -1,13 +1,18 @@
 package ir.sahab.rsstoy.model;
 
-import java.util.Date;
-
 public class News {
     private String title;
     private String Author;
-    private Date date;
+    private String date;
     private String description;
     private String content;
+
+    public News(String title, String author, String date, String description) {
+        this.title = title;
+        Author = author;
+        this.date = date;
+        this.description = description;
+    }
 
     public String getTitle() {
         return title;
@@ -17,7 +22,7 @@ public class News {
         return Author;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
@@ -37,7 +42,7 @@ public class News {
         Author = author;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
