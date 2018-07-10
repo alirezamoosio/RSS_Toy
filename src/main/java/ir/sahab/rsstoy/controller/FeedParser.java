@@ -23,12 +23,26 @@ public class FeedParser {
             news = new News[elements.size()];
             int counter = 0;
             for (Element element : elements) {
-                news[counter++] = new News(element.select("title").toString(), element.select("author").toString()
-                        , element.select("pubDate").toString(), element.select("description").toString());
+                if (counter > 5)
+                    break;
+                String content = getContent(element.select("link").text());
+                news[counter++] = new News(element.select("title").text(), element.select("author").text()
+                        , element.select("pubDate").text(), element.select("description").text(), content);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return news;
     }
+
+    private String getContent(String url) {
+        System.err.println(url);
+        try {
+            return Jsoup.connect(url).get().text();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

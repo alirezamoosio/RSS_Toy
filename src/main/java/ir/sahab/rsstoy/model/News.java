@@ -2,16 +2,17 @@ package ir.sahab.rsstoy.model;
 
 public class News {
     private String title;
-    private String Author;
+    private String author;
     private String date;
     private String description;
     private String content;
 
-    public News(String title, String author, String date, String description) {
+    public News(String title, String author, String date, String description, String content) {
         this.title = title;
-        Author = author;
+        this.author = author;
         this.date = date;
         this.description = description;
+        this.content = content;
     }
 
     public String getTitle() {
@@ -19,7 +20,7 @@ public class News {
     }
 
     public String getAuthor() {
-        return Author;
+        return author;
     }
 
     public String getDate() {
@@ -39,7 +40,7 @@ public class News {
     }
 
     public void setAuthor(String author) {
-        Author = author;
+        this.author = author;
     }
 
     public void setDate(String date) {
@@ -52,5 +53,14 @@ public class News {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return "Title: " + title + "\n"
+                + "Author: " + author + "\n"
+                + "Date: " + date + "\n"
+                + "Description: " + description + "\n"
+                + "Content: " + content + "\n";
     }
 }
