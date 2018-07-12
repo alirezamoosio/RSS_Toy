@@ -18,7 +18,7 @@ import java.util.Formatter;
 public class App 
 {
     public static void main( String[] args ) {
-//        FeedParser feedParser = new FeedParser("https://fararu.com/fa/rss/1");
+//        FeedParser fee3dParser = new FeedParser("https://fararu.com/fa/rss/1");
 //        News[] news = feedParser.getAllNews();
 //        for (News eachNews : news) {
 //            System.out.println(eachNews);
