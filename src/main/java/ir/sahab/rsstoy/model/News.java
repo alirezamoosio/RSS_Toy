@@ -1,18 +1,27 @@
 package ir.sahab.rsstoy.model;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class News {
     private String title;
     private String author;
-    private String date;
     private String description;
     private String content;
+    private Website website;
+    private Date date;
 
-    public News(String title, String author, String date, String description, String content) {
-        this.title = title;
-        this.author = author;
-        this.date = date;
-        this.description = description;
-        this.content = content;
+    private News(Builder builder) {
+        this.title = builder.title;
+        this.author = builder.author;
+        this.description = builder.description;
+        this.content = builder.content;
+        this.website = builder.website;
+        this.date = builder.date;
+    }
+
+    public static Builder newNews() {
+        return new Builder();
     }
 
     public String getTitle() {
@@ -23,10 +32,6 @@ public class News {
         return author;
     }
 
-    public String getDate() {
-        return date;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -35,32 +40,67 @@ public class News {
         return content;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public Website getWebsite() {
+        return website;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public Date getDate() {
+        return date;
     }
 
     @Override
     public String toString() {
         return "Title: " + title + "\n"
                 + "Author: " + author + "\n"
+                + "Website: " + website + "\n"
                 + "Date: " + date + "\n"
                 + "Description: " + description + "\n"
                 + "Content: " + content + "\n";
+    }
+
+    public static final class Builder {
+        private String title;
+        private String author;
+        private String description;
+        private String content;
+        private Website website;
+        private Date date;
+
+        private Builder() {
+        }
+
+        public News build() {
+            return new News(this);
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder author(String author) {
+            this.author = author;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder content(String content) {
+            this.content = content;
+            return this;
+        }
+
+        public Builder website(Website website) {
+            this.website = website;
+            return this;
+        }
+
+        public Builder date(Date date) {
+            this.date = date;
+            return this;
+        }
     }
 }
