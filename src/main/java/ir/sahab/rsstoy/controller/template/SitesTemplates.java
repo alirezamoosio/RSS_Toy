@@ -1,4 +1,7 @@
-package ir.sahab.rsstoy.controller;
+package ir.sahab.rsstoy.controller.template;
+
+import ir.sahab.rsstoy.controller.RefreshModel;
+import ir.sahab.rsstoy.controller.Refreshable;
 
 import java.util.LinkedHashMap;
 

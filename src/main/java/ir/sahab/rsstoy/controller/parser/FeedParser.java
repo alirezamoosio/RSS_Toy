@@ -1,5 +1,7 @@
-package ir.sahab.rsstoy.controller;
+package ir.sahab.rsstoy.controller.parser;
 
+import ir.sahab.rsstoy.controller.template.SitesTemplates;
+import ir.sahab.rsstoy.controller.template.Template;
 import ir.sahab.rsstoy.model.News;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +27,7 @@ public class FeedParser {
         this.rssLink = rssLink;
 
         try {
-            Document document = Jsoup.connect(rssLink).validateTLSCertificates(false).get();
+            document = Jsoup.connect(rssLink).validateTLSCertificates(false).get();
         } catch (IOException e) {
             e.printStackTrace();
         }

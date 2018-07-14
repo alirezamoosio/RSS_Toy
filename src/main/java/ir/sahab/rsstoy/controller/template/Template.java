@@ -1,4 +1,4 @@
-package ir.sahab.rsstoy.controller;
+package ir.sahab.rsstoy.controller.template;
 
 public class Template {
     private String keyValue;
