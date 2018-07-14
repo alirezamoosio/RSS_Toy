@@ -7,7 +7,12 @@ public class SitesTemplates implements Refreshable {
     public static SitesTemplates getInstance() {
         return ourInstance;
     }
-    private static LinkedHashMap<String,Template> sitesTemplate;
+    private  LinkedHashMap<String,Template> sitesTemplate=new LinkedHashMap<>();
+
+    public LinkedHashMap<String, Template> getSitesTemplate() {
+        return sitesTemplate;
+    }
+
     private SitesTemplates() {
 
     }

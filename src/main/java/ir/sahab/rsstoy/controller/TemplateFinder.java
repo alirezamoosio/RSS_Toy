@@ -1,5 +1,5 @@
 package ir.sahab.rsstoy.controller;
 
-public class FindingTemplate {
+public class TemplateFinder {
 
 }

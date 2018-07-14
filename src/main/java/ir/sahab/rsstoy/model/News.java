@@ -8,8 +8,19 @@ public class News {
     private String author;
     private String description;
     private String content;
-    private Website website;
+    private String  website;
+    private String link;
     private Date date;
+
+    public News(String title, String author, String description, String content, String website,String link, Date date) {
+        this.title = title;
+        this.author = author;
+        this.description = description;
+        this.content = content;
+        this.website = website;
+        this.link=link;
+        this.date = date;
+    }
 
     private News(Builder builder) {
         this.title = builder.title;
@@ -18,6 +29,14 @@ public class News {
         this.content = builder.content;
         this.website = builder.website;
         this.date = builder.date;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public static Builder newNews() {
@@ -40,7 +59,7 @@ public class News {
         return content;
     }
 
-    public Website getWebsite() {
+    public String getWebsite() {
         return website;
     }
 
@@ -63,7 +82,7 @@ public class News {
         private String author;
         private String description;
         private String content;
-        private Website website;
+        private String website;
         private Date date;
 
         private Builder() {
@@ -93,7 +112,7 @@ public class News {
             return this;
         }
 
-        public Builder website(Website website) {
+        public Builder website(String website) {
             this.website = website;
             return this;
         }
