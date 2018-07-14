@@ -1,6 +1,5 @@
-package ir.sahab.rsstoy.controller.template;
+package ir.sahab.rsstoy.template;
 
-import ir.sahab.rsstoy.controller.template.Template;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

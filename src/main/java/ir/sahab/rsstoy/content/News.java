@@ -1,6 +1,5 @@
-package ir.sahab.rsstoy.model;
+package ir.sahab.rsstoy.content;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 public class News {
@@ -8,17 +7,17 @@ public class News {
     private String author;
     private String description;
     private String content;
-    private String  website;
+    private String website;
     private String link;
     private Date date;
 
-    public News(String title, String author, String description, String content, String website,String link, Date date) {
+    public News(String title, String author, String description, String content, String website, String link, Date date) {
         this.title = title;
         this.author = author;
         this.description = description;
         this.content = content;
         this.website = website;
-        this.link=link;
+        this.link = link;
         this.date = date;
     }
 

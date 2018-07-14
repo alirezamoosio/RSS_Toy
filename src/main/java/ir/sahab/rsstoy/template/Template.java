@@ -1,13 +1,12 @@
-package ir.sahab.rsstoy.controller.template;
+package ir.sahab.rsstoy.template;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class Template implements Serializable {
     private String keyValue;
     private String funcName;
-    private DateFormat dateFormat ;
+    private String dateFormat;
+
     public Template(String keyValue, String keyModel, String dateFormat) {
         this.keyValue = keyValue;
         switch (keyModel.toLowerCase()) {
@@ -15,17 +14,17 @@ public class Template implements Serializable {
                 funcName = "getElementById";
                 break;
             default:
-                funcName ="getElementById"+keyModel;
+                funcName = "getElementById" + keyModel;
                 break;
         }
-        this.dateFormat= new SimpleDateFormat(dateFormat);
+        this.dateFormat = dateFormat;
     }
 
-    public DateFormat getDateFormat() {
+    public String getDateFormat() {
         return dateFormat;
     }
 
-    public void setDateFormat(DateFormat dateFormat) {
+    public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
     }
 
