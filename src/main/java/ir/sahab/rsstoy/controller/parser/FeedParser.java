@@ -21,8 +21,7 @@ public class FeedParser {
     private String rssLink;
     private SitesTemplates sitesTemplates = SitesTemplates.getInstance();
     private Document document = null;
-    private DateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
-    
+
     public FeedParser(String rssLink) {
         this.rssLink = rssLink;
 
@@ -41,18 +40,21 @@ public class FeedParser {
     }
 
     public News news(Element e) {
-        Date pubDate=null;
         String link=e.getElementsByTag("link").text();
         String title=e.getElementsByTag("title").text();
         String author=e.getElementsByTag("author").text();
         String description=e.getElementsByTag("description").text();
-        try {
+        String website=link.split("/")[2];
+        return new News(title,author,description,getContent(link),website,link,getDate(website,e));
+    }
 
-            pubDate = formatter.parse(e.getElementsByTag("pubDate").text());
+    private Date getDate(String website, Element e) {
+        try {
+            return sitesTemplates.getSitesTemplate().get(website).getDateFormat().parse(e.getElementsByTag("pubDate").text());
         } catch (ParseException e1) {
             e1.printStackTrace();
         }
-        return new News(title,author,description,getContent(link),link.split("/")[2],link,pubDate);
+        return null;
     }
 
 
