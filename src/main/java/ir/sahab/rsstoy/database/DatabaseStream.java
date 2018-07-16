@@ -8,8 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public abstract class DatabaseStream {
-    private Connection connection;
-    Statement statement;
+    Connection connection;
     private static final String DB_NAME = "NewsDB";
     private static final String DB_URL = "jdbc:mysql://localhost/?&useSSL=false";
     static final String SITE_TABLE = "Websites";
@@ -25,18 +24,18 @@ public abstract class DatabaseStream {
     DatabaseStream(String userName, String password) {
         try {
             connection = DriverManager.getConnection(DB_URL, userName, password);
-            statement = connection.createStatement();
+            Statement statement = connection.createStatement();
             statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
             statement.executeUpdate("use " + DB_NAME);
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + SITE_TABLE
-            + " (WebsiteName VARCHAR(100), FuncName VARCHAR(100), DateFormat VARCHAR (100))");
+            + " (WebsiteName VARCHAR(100), AttName VARCHAR (100), FuncName VARCHAR(100), DateFormat VARCHAR (100), PRIMARY KEY (WebsiteName))");
+            statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void close() throws SQLException {
-        statement.close();
         connection.close();
     }
 }

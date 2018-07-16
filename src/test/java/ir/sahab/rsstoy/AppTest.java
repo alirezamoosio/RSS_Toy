@@ -33,7 +33,7 @@ public class AppTest
         Date date = new Date(110, 2, 3, 4, 5, 6);
         News news = News.newNews().title("اوهوی").author("هوو").website("عضر ایران").date(date)
                 .description("توضیح").content("محتوا").build();
-        dataBaseWriter.writeToDatabase(news);
+        dataBaseWriter.write(news);
     }
 
     @Test

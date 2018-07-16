@@ -3,6 +3,7 @@ package ir.sahab.rsstoy.database;
 import ir.sahab.rsstoy.template.Template;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DatabaseTemplateWriter extends DatabaseStream {
 
@@ -10,9 +11,20 @@ public class DatabaseTemplateWriter extends DatabaseStream {
         super(userName, password);
     }
 
-    public void addTemplate(Template template) throws SQLException {
+    public void add(String websiteName, Template template) throws SQLException {
+        websiteName = websiteName.replace(" ", "_");
+        Statement statement = connection.createStatement();
         statement.executeUpdate("INSERT INTO " + SITE_TABLE +
-        " VALUES (\'" + template.getKeyValue() + "\', \'" +
-        template.getFuncName() + "\', \'" + template.getDateFormatString() + "\')");
+        " VALUES (\'" + websiteName + "\', \'" + template.getKeyValue() + "\', \'" +
+        template.getFuncName() + "\', \'" + template.getDateFormat() + "\')");
+        statement.close();
+    }
+
+    public void remove(String websiteName) throws SQLException {
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("DROP TABLE IF EXISTS " + websiteName.replace(" ", "_"));
+        statement.executeUpdate("DELETE FROM " + SITE_TABLE + " WHERE WebsiteName = \'"
+                + websiteName.replace(" ", "_") + "\'");
+        statement.close();
     }
 }

@@ -4,6 +4,7 @@ import ir.sahab.rsstoy.content.News;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,28 +16,43 @@ public class DatabaseReader extends DatabaseStream {
     }
 
     public List<News> getAllNews() throws SQLException {
-        return getNewsByCondition("");
+        return getNewsByCondition("", "");
     }
 
 
     public List<News> getNewsByExactTitle(String title) throws SQLException {
-        return getNewsByCondition("WHERE Title = title");
+        return getNewsByCondition("", "WHERE Title = \'" + title + "\'");
     }
 
     public List<News> getNewsByTitleSearch(String query) throws SQLException {
-        return getNewsByCondition("WHERE Title LIKE '%query%'");
+        return getNewsByCondition("", "WHERE Title LIKE \'%" + query + "%\'");
     }
 
-    private List<News> getNewsByCondition(String condition) throws SQLException {
+    public List<News> getNewsByContentSearch(String query) throws SQLException {
+        return getNewsByCondition("", "WHERE Content LIKE \'%" + query + "%\'");
+    }
+
+    public List<News> getLastNews(String websiteName, int number) throws SQLException {
+        websiteName = websiteName.replace(" ", "_");
+        String websiteCondition = "WHERE WebsiteName = \'" + websiteName + "\'";
+        String newsCondition = "ORDER BY PubDate DESC LIMIT " + number;
+        return getNewsByCondition(websiteCondition, newsCondition);
+    }
+
+    private List<News> getNewsByCondition(String websiteCondition, String newsCondition) throws SQLException {
         List<News> list = new ArrayList<>();
-        ResultSet sitesSet = statement.executeQuery("SELECT * FROM " + SITE_TABLE);
+        Statement statement = connection.createStatement();
+        ResultSet sitesSet = statement.executeQuery("SELECT * FROM " + SITE_TABLE + " " + websiteCondition);
         while (sitesSet.next()) {
             String websiteName = sitesSet.getString("WebsiteName");
-            ResultSet newsSet = statement.executeQuery("SELECT * FROM " + websiteName.replace(" ", "_") + " " + condition);
+            Statement otherStatement = connection.createStatement();
+            ResultSet newsSet = otherStatement.executeQuery("SELECT * FROM " + websiteName.replace(" ", "_") + " " + newsCondition);
             while (newsSet.next()) {
                 list.add(fromResultSet(newsSet));
             }
+            otherStatement.close();
         }
+        statement.close();
         return list;
     }
 

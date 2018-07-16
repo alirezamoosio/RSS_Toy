@@ -1,6 +1,6 @@
 package ir.sahab.rsstoy.parser;
 
-import ir.sahab.rsstoy.template.SitesTemplates;
+import ir.sahab.rsstoy.template.SiteTemplates;
 import ir.sahab.rsstoy.content.News;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +13,7 @@ import java.util.Date;
 
 public class FeedParser {
     private String rssLink;
-    private SitesTemplates sitesTemplates = SitesTemplates.getInstance();
+    private SiteTemplates siteTemplates = SiteTemplates.getInstance();
     private Document document = null;
 
     public FeedParser(String rssLink) {
