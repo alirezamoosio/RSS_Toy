@@ -1,31 +1,43 @@
 package ir.sahab.rsstoy.template;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class Template implements Serializable {
     private String keyValue;
     private String funcName;
-    private String dateFormat;
+    private String dateFormatString;
+    private SimpleDateFormat dateFormater;
 
-    public Template(String keyValue, String keyModel, String dateFormat) {
-        this.keyValue = keyValue;
-        switch (keyModel.toLowerCase()) {
+    public Template(String attrValue, String attrModel, String dateFormat) {
+        this.keyValue = attrValue;
+        switch (attrModel.toLowerCase()) {
             case "id":
                 funcName = "getElementById";
                 break;
             default:
-                funcName = "getElementById" + keyModel;
+                funcName = "getElementById" + attrModel;
                 break;
         }
-        this.dateFormat = dateFormat;
+        this.dateFormatString = dateFormat;
+        this.dateFormater = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
     }
 
-    public String getDateFormat() {
-        return dateFormat;
+    public SimpleDateFormat getDateFormater() {
+        return dateFormater;
     }
 
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
+    public void setDateFormater(SimpleDateFormat dateFormater) {
+        this.dateFormater = dateFormater;
+    }
+
+    public String getDateFormatString() {
+        return dateFormatString;
+    }
+
+    public void setDateFormatString(String dateFormatString) {
+        this.dateFormatString = dateFormatString;
     }
 
     public String getKeyValue() {

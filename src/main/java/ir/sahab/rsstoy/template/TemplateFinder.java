@@ -1,102 +1,139 @@
 package ir.sahab.rsstoy.template;
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class TemplateFinder {
     public static Template findTemplate(String rss) throws IOException {
-        Document document = Jsoup.connect(rss).validateTLSCertificates(false).get();
-        Elements elements = document.getElementsByTag("link");
-        Document sampleDoc = null;
-        Document tempDoc;
-        int maxTextSize = -1;
-        for (int i = 4; i < elements.size() / 4; i++) {
-            Element element = elements.get(i);
-            tempDoc = Jsoup.connect(element.text()).validateTLSCertificates(false).get();
-            if (tempDoc.text().length() > maxTextSize) {
-                maxTextSize = tempDoc.text().length();
-                sampleDoc = tempDoc;
-            }
-        }
-        ArrayList<MyElement> myElements=new ArrayList<>();
-        System.out.println(sampleDoc.text());
-        Elements classElements = sampleDoc.getElementsByAttribute("class");
-        for (int i = 0; i < classElements.size(); i++) {
+        Document rssDoc = Jsoup.connect(rss).validateTLSCertificates(false).get();
+        Document goodPage = findMaxTextPage(rssDoc);
+        String dateFormat = findDateFormat(rssDoc);
+        String newsBodyAddress = findBodyAddress(goodPage);
+        return new Template(newsBodyAddress, "Class", dateFormat);
+    }
+
+    private static String findBodyAddress(Document goodPage) {
+
+        ArrayList<MyElement> myElements = new ArrayList<>();
+        Elements classElements = goodPage.getElementsByAttribute("class");
+        for (int i = classElements.size() - 1; i >= 0; i--) {
+            if (classElements.get(i).outerHtml().contains("mobile"))
+                continue;
             int numberOFDot = classElements.get(i).text().split("[.]+").length;
-            myElements.add(new MyElement(classElements.get(i),numberOFDot));
+            myElements.add(new MyElement(classElements.get(i), numberOFDot));
         }
-        Collections.reverse(myElements);
         Collections.sort(myElements);
         Collections.reverse(myElements);
 
-        for (int i = 1; i < myElements.size() / 2; i++) {
-//            if (myElements.get(i).getElement().outerHtml().contains("hidden") ||myElements.get(i).getElement().outerHtml().contains("mobile") )
-//                continue;
-            System.out.println(myElements.get(i).getElement().text().contains(myElements.get(i+1).getElement().text()));
-            System.out.println(myElements.get(i).getElement().className());
-            System.out.println(myElements.get(i).getElement().text());
-            System.out.println();
-            System.out.println();
-        }
-        for (int i = 3; i < myElements.size() / 5; i++) {
-            if (myElements.get(i).getElement().outerHtml().contains("mobile") )
-                continue;
+        for (int i = 2; i < myElements.size() / 5; i++) {
             if (!myElements.get(i).getElement().text().contains(myElements.get(i + 1).getElement().text())) {
-                System.out.println(myElements.get(i).getElement().className());
-                System.out.println(myElements.get(i).getElement().text());
-                break;
+                return myElements.get(i).getElement().className();
             }
-
-//            if (!classElements.get(numberOfDotArray.get(i)).text().
-//                    contains(classElements.get(numberOfDotArray.get(i - 1)).text()))
-//                return new Template(classElements.get(i).className(), "Class");
         }
         return null;
     }
+
+    private static String findDateFormat(Document rssDoc) {
+        Elements elementsOfPubDate = rssDoc.getElementsByTag("pubDate");
+        return DateFomatFinder.parse(elementsOfPubDate.get(0).text());
+    }
+
+    private static Document findMaxTextPage(Document rssDoc) throws IOException {
+        Elements elementsOfLinks = rssDoc.getElementsByTag("link");
+        Document maxTextPage = null;
+        Document tempDoc;
+        int maxTextSize = -1;
+        for (int i = 4; i < elementsOfLinks.size() / 4; i++) {
+            Element element = elementsOfLinks.get(i);
+            tempDoc = Jsoup.connect(element.text()).validateTLSCertificates(false).get();
+            if (tempDoc.text().length() > maxTextSize) {
+                maxTextSize = tempDoc.text().length();
+                maxTextPage = tempDoc;
+            }
+        }
+        return maxTextPage;
+    }
 }
-class MyElement implements Comparable<MyElement>{
+
+class MyElement implements Comparable<MyElement> {
     private int numberOfDots;
     private Element element;
 
-    public MyElement(Element element, int numberOfDots ) {
+    MyElement(Element element, int numberOfDots) {
         this.numberOfDots = numberOfDots;
         this.element = element;
     }
 
     @Override
     public int compareTo(MyElement o) {
-        if (numberOfDots==o.getNumberOfDots()){
+        if (numberOfDots == o.getNumberOfDots()) {
             return 0;
-        }else if (numberOfDots> o.getNumberOfDots()){
+        } else if (numberOfDots > o.getNumberOfDots()) {
             return 1;
         }
         return -1;
     }
 
 
-    public int getNumberOfDots() {
+    int getNumberOfDots() {
         return numberOfDots;
     }
 
-    public void setNumberOfDots(int numberOfDots) {
+    void setNumberOfDots(int numberOfDots) {
         this.numberOfDots = numberOfDots;
     }
 
-    public Element getElement() {
+    Element getElement() {
         return element;
     }
 
-    public void setElement(Element element) {
+    void setElement(Element element) {
         this.element = element;
+    }
+}
+
+class DateFomatFinder {
+
+    private static final String[] formats =
+            {
+                    "EEE, dd MMM yyyy HH:mm:ss Z",
+                    "dd MMM yyyy HH:mm:ss Z",
+                    "EEE, dd MMM yyyy HH:mm",
+                    "dd MMM yyyy HH:mm",
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+                    "EEE, d MMM yyyy HH:mm:ss Z",
+                    "EEE, dd MMM yyyy HH:mm:ss zzz",
+                    "yyyy-mm-dd HH:mm:ss",
+                    "yyyy-mm-dd hh:mm:ss",
+                    "yyyy-MM-dd'T'HH:mm:ssZ",
+                    "yyyy-MM-dd'T'HH:mm:ss",
+                    "yyyy-MM-dd'T'HH:mm:ssZ",
+                    "yyyy-MM-dd'T'HH:mm:ss Z",
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+                    "yyyy-MM-dd'T'hh:mm:ssXXX",
+                    "dd MMM yyyy HH:mm:ss Z",
+                    "MM/dd/yyyy",
+            };
+
+    public static String parse(String d) {
+        if (d != null) {
+            for (String parse : formats) {
+                SimpleDateFormat sdf = new SimpleDateFormat(parse);
+                try {
+                    sdf.parse(d);
+                    return parse;
+                } catch (ParseException ignored) {
+                }
+            }
+        }
+
+        return null;
     }
 }

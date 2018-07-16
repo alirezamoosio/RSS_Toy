@@ -13,6 +13,6 @@ public class DatabaseTemplateWriter extends DatabaseStream {
     public void addTemplate(Template template) throws SQLException {
         statement.executeUpdate("INSERT INTO " + SITE_TABLE +
         " VALUES (\'" + template.getKeyValue() + "\', \'" +
-        template.getFuncName() + "\', \'" + template.getDateFormat() + "\')");
+        template.getFuncName() + "\', \'" + template.getDateFormatString() + "\')");
     }
 }

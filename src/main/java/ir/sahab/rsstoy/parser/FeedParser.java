@@ -44,7 +44,7 @@ public class FeedParser {
 
     private Date getDate(String website, Element e) {
 //        try {
-//            return new SimpleDateFormat(sitesTemplates.getSitesTemplate().get(website).getDateFormat()).parse(e.getElementsByTag("pubDate").text());
+//            return new SimpleDateFormat(sitesTemplates.getSitesTemplate().get(website).getDateFormatString()).parse(e.getElementsByTag("pubDate").text());
 //        } catch (ParseException e1) {
 //            e1.printStackTrace();
 //        }
