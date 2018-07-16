@@ -16,7 +16,7 @@ public class DatabaseTemplateWriter extends DatabaseStream {
         Statement statement = connection.createStatement();
         statement.executeUpdate("INSERT INTO " + SITE_TABLE +
         " VALUES (\'" + websiteName + "\', \'" + template.getKeyValue() + "\', \'" +
-        template.getFuncName() + "\', \'" + template.getDateFormat() + "\')");
+        template.getFuncName() + "\', \'" + template.getDateFormatString() + "\')");
         statement.close();
     }
 

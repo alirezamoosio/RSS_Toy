@@ -56,7 +56,7 @@ public class AppTest
     @Test
     public void testGetFromSite() throws IOException {
         FeedParser feedParser = new FeedParser("http://www.asriran.com/fa/rss/1");
-        News[] news = feedParser.getAllNews();
+        List<News> news = feedParser.getAllNews();
 
         for (News eachNews : news) {
             System.out.println(eachNews);

@@ -17,7 +17,7 @@ public class Template implements Serializable {
                 funcName = "getElementById";
                 break;
             default:
-                funcName = "getElementById" + attrModel;
+                funcName = "getElementsBy" + attrModel;
                 break;
         }
         this.dateFormatString = dateFormat;
