@@ -28,7 +28,8 @@ public abstract class DatabaseStream {
             statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
             statement.executeUpdate("use " + DB_NAME);
             statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + SITE_TABLE
-            + " (WebsiteName VARCHAR(100), AttName VARCHAR (100), FuncName VARCHAR(100), DateFormat VARCHAR (100), PRIMARY KEY (WebsiteName))");
+            + " (ID INTEGER , WebsiteName VARCHAR(100), AttName VARCHAR (100), FuncName VARCHAR(100)," +
+                    " RSSLink VARCHAR (1000), DateFormat VARCHAR (100), PRIMARY KEY (ID))");
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();

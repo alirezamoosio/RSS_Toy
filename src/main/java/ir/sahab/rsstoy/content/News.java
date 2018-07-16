@@ -91,23 +91,25 @@ public class News {
             return new News(this);
         }
 
+        // TODO: 7/16/18 Find a better way for ' stuff
+
         public Builder title(String title) {
-            this.title = title;
+            this.title = title.replace("'", ";");
             return this;
         }
 
         public Builder author(String author) {
-            this.author = author;
+            this.author = author.replace("'", ";");
             return this;
         }
 
         public Builder description(String description) {
-            this.description = description;
+            this.description = description.replace("'", ";");
             return this;
         }
 
         public Builder content(String content) {
-            this.content = content;
+            this.content = content.replace("'", ";");
             return this;
         }
 

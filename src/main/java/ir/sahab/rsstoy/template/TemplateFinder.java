@@ -16,23 +16,24 @@ public class TemplateFinder {
         Document goodPage = findMaxTextPage(rssDoc);
         String dateFormat = findDateFormat(rssDoc);
         String newsBodyAddress = findBodyAddress(goodPage);
-        return new Template(newsBodyAddress, "Class", dateFormat);
+        return new Template(newsBodyAddress, "Class", dateFormat, rss);
     }
 
     private static String findBodyAddress(Document goodPage) {
 
         ArrayList<MyElement> myElements = new ArrayList<>();
         Elements classElements = goodPage.getElementsByAttribute("class");
-        for (int i = classElements.size() - 1; i >= 0; i--) {
+        for (int i = 0; i < classElements.size(); i++) {
             if (classElements.get(i).outerHtml().contains("mobile"))
                 continue;
             int numberOFDot = classElements.get(i).text().split("[.]+").length;
             myElements.add(new MyElement(classElements.get(i), numberOFDot));
         }
+        Collections.reverse(myElements);
         Collections.sort(myElements);
         Collections.reverse(myElements);
 
-        for (int i = 2; i < myElements.size() / 5; i++) {
+        for (int i = 0; i < myElements.size() / 5; i++) {
             if (!myElements.get(i).getElement().text().contains(myElements.get(i + 1).getElement().text())) {
                 return myElements.get(i).getElement().className();
             }

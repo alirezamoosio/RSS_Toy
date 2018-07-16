@@ -5,9 +5,14 @@ import ir.sahab.rsstoy.database.DatabaseTemplateWriter;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class SiteTemplates {
-    private static SiteTemplates ourInstance = new SiteTemplates();
+    private static SiteTemplates ourInstance;
+
+    public static void init() {
+        ourInstance = new SiteTemplates();
+    }
 
     public static SiteTemplates getInstance() {
         return ourInstance;
@@ -15,8 +20,13 @@ public class SiteTemplates {
 
     private LinkedHashMap<String, Template> siteTemplates = new LinkedHashMap<>();
 
-    public Template getTemplateByName(String webstieName) {
-        return siteTemplates.get(webstieName);
+    public LinkedHashMap<String, Template> getSiteTemplates() {
+        return siteTemplates;
+    }
+
+    public Template getTemplateByName(String websiteName) {
+        websiteName = websiteName.replace(" ", "_");
+        return siteTemplates.get(websiteName);
     }
 
     public void add(String websiteName, Template template) {

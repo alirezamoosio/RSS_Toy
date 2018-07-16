@@ -15,8 +15,8 @@ public class DatabaseTemplateWriter extends DatabaseStream {
         websiteName = websiteName.replace(" ", "_");
         Statement statement = connection.createStatement();
         statement.executeUpdate("INSERT INTO " + SITE_TABLE +
-        " VALUES (\'" + websiteName + "\', \'" + template.getKeyValue() + "\', \'" +
-        template.getFuncName() + "\', \'" + template.getDateFormatString() + "\')");
+        " VALUES (\'" + websiteName.hashCode() + "\', \'" + websiteName + "\', \'" + template.getAttName() + "\', \'" +
+        template.getFuncName() + "\', \'" + template.getRssLink() + "\', \'" + template.getDateFormatString() + "\')");
         statement.close();
     }
 

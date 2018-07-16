@@ -18,12 +18,13 @@ import java.util.List;
 
 public class FeedParser {
     private String rssLink;
+    private String websiteName;
     private SiteTemplates siteTemplates = SiteTemplates.getInstance();
     private Document document = null;
 
-    public FeedParser(String rssLink) {
-        this.rssLink = rssLink;
-
+    public FeedParser(String websiteName) {
+        this.websiteName = websiteName;
+        rssLink = SiteTemplates.getInstance().getTemplateByName(websiteName).getRssLink();
         try {
             document = Jsoup.connect(rssLink).validateTLSCertificates(false).get();
         } catch (IOException e) {
@@ -43,13 +44,13 @@ public class FeedParser {
         String title = element.getElementsByTag("title").text();
         String author = element.getElementsByTag("author").text();
         String description = element.getElementsByTag("description").text();
-        String website = link.split("/")[2];
+        String website = websiteName;
         return new News(title, author, description, getContent(link), website, link, getDate(website, element.getElementsByTag("pubDate").get(0).text()));
     }
 
-    private Date getDate(String website, String e)  {
+    private Date getDate(String website, String e) {
         try {
-            return  siteTemplates.getTemplateByName(website).getDateFormater().parse(e);
+            return siteTemplates.getTemplateByName(website).getDateFormatter().parse(e);
         } catch (ParseException e1) {
             e1.printStackTrace();
         }
@@ -57,7 +58,7 @@ public class FeedParser {
     }
 
 
-    public List<News> getAllNews()  {
+    public List<News> getAllNews() {
         Elements elements = document.getElementsByTag("item");
         ArrayList<News> newses = new ArrayList<>();
         for (Element e : elements) {
@@ -67,13 +68,13 @@ public class FeedParser {
     }
 
     private String getContent(String url) {
-        String website = url.split("/")[2];
+        String website = websiteName;
         Template template = siteTemplates.getTemplateByName(website);
         String newsContent = null;
         try {
             Document document = Jsoup.connect(url).validateTLSCertificates(false).get();
             Method method = Document.class.getMethod(template.getFuncName(), String.class);
-            Object o = method.invoke(document, template.getKeyValue());
+            Object o = method.invoke(document, template.getAttName());
             if (o instanceof Elements) {
                 newsContent = ((Elements) o).text();
 

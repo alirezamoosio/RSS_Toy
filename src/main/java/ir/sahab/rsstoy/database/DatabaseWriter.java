@@ -17,12 +17,12 @@ public class DatabaseWriter extends DatabaseStream {
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(news.getDate());
         String websiteName = news.getWebsite().replace(" ", "_");
         String sql = "CREATE TABLE IF NOT EXISTS " +
-                websiteName + " (Title VARCHAR(1000), Author VARCHAR (1000), "
+                websiteName + " (ID INTEGER, Title VARCHAR(1000), Author VARCHAR (1000), "
                 + "PubDate TIMESTAMP, "
-                + "Description TEXT, Content TEXT, PRIMARY KEY (Title)) ";
+                + "Description TEXT, Content TEXT, PRIMARY KEY (ID)) ";
         statement.executeUpdate(sql);
         statement.executeUpdate("INSERT INTO " + websiteName + " VALUES(\'"
-        + news.getTitle() + "\', \'" + news.getAuthor() + "\', \'" + time + "\', \'"
+        + news.getTitle().hashCode() + "\', \'" + news.getTitle() + "\', \'" + news.getAuthor() + "\', \'" + time + "\', \'"
         + news.getDescription() + "\', \'" + news.getContent() + "\')");
         statement.close();
     }

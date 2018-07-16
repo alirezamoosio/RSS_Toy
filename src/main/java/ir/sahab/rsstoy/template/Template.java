@@ -5,13 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class Template implements Serializable {
-    private String keyValue;
+    private String attName;
     private String funcName;
     private String dateFormatString;
-    private SimpleDateFormat dateFormater;
+    private String rssLink;
+    private SimpleDateFormat dateFormatter;
 
-    public Template(String attrValue, String attrModel, String dateFormat) {
-        this.keyValue = attrValue;
+    public Template(String attrValue, String attrModel, String dateFormat, String rssLink) {
+        this.attName = attrValue;
+        this.rssLink = rssLink;
         switch (attrModel.toLowerCase()) {
             case "id":
                 funcName = "getElementById";
@@ -21,15 +23,15 @@ public class Template implements Serializable {
                 break;
         }
         this.dateFormatString = dateFormat;
-        this.dateFormater = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+        this.dateFormatter = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
     }
 
-    public SimpleDateFormat getDateFormater() {
-        return dateFormater;
+    public SimpleDateFormat getDateFormatter() {
+        return dateFormatter;
     }
 
-    public void setDateFormater(SimpleDateFormat dateFormater) {
-        this.dateFormater = dateFormater;
+    public void setDateFormatter(SimpleDateFormat dateFormatter) {
+        this.dateFormatter = dateFormatter;
     }
 
     public String getDateFormatString() {
@@ -40,12 +42,12 @@ public class Template implements Serializable {
         this.dateFormatString = dateFormatString;
     }
 
-    public String getKeyValue() {
-        return keyValue;
+    public String getAttName() {
+        return attName;
     }
 
-    public void setKeyValue(String keyValue) {
-        this.keyValue = keyValue;
+    public void setAttName(String attName) {
+        this.attName = attName;
     }
 
     public String getFuncName() {
@@ -54,5 +56,9 @@ public class Template implements Serializable {
 
     public void setFuncName(String funcName) {
         this.funcName = funcName;
+    }
+
+    public String getRssLink() {
+        return rssLink;
     }
 }

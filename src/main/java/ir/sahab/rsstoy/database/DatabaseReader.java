@@ -39,6 +39,12 @@ public class DatabaseReader extends DatabaseStream {
         return getNewsByCondition(websiteCondition, newsCondition);
     }
 
+    public List<News> getNewsByDate(String websiteName, String dateFormat) throws SQLException {
+        String websiteCondition = "WHERE WebsiteName = \'" + websiteName + "\'";
+        String newsCondition = "WHERE DATEDIFF(PubDate, \'" + dateFormat + "\') = 0";
+        return getNewsByCondition(websiteCondition, newsCondition);
+    }
+
     private List<News> getNewsByCondition(String websiteCondition, String newsCondition) throws SQLException {
         List<News> list = new ArrayList<>();
         Statement statement = connection.createStatement();

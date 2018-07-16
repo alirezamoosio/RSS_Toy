@@ -17,12 +17,15 @@ public class DatabaseTemplateReader extends DatabaseStream {
         String sql = "SELECT * FROM " + SITE_TABLE;
         ResultSet resultSet = statement.executeQuery(sql);
         while (resultSet.next()) {
-            String webisteName = resultSet.getString("WebsiteName");
+            String websiteName = resultSet.getString("WebsiteName");
             String attName = resultSet.getString("AttName");
             String funcName = resultSet.getString("FuncName");
+            String rssLink = resultSet.getString("RSSLink");
             String dateFormat = resultSet.getString("DateFormat");
-            Template template = new Template(attName, funcName, dateFormat);
-            siteTemplates.put(webisteName, template);
+            // TODO: 7/16/18 change next line of code!
+            String attModel = attName.equals("getElementById") ? "Id" : funcName.substring(13);
+            Template template = new Template(attName, attModel, dateFormat, rssLink);
+            siteTemplates.put(websiteName, template);
         }
         statement.close();
     }
