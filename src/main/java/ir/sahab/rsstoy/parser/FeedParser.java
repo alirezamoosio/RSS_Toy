@@ -2,14 +2,19 @@ package ir.sahab.rsstoy.parser;
 
 import ir.sahab.rsstoy.template.SiteTemplates;
 import ir.sahab.rsstoy.content.News;
+import ir.sahab.rsstoy.template.Template;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FeedParser {
     private String rssLink;
@@ -33,54 +38,53 @@ public class FeedParser {
         return news(e);
     }
 
-    public News news(Element e) {
-        String link = e.getElementsByTag("link").text();
-        String title = e.getElementsByTag("title").text();
-        String author = e.getElementsByTag("author").text();
-        String description = e.getElementsByTag("description").text();
+    public News news(Element element) {
+        String link = element.getElementsByTag("link").text();
+        String title = element.getElementsByTag("title").text();
+        String author = element.getElementsByTag("author").text();
+        String description = element.getElementsByTag("description").text();
         String website = link.split("/")[2];
-        return new News(title, author, description, getContent(link), website, link, getDate(website, e));
+        return new News(title, author, description, getContent(link), website, link, getDate(website, element.getElementsByTag("pubDate").get(0).text()));
     }
 
-    private Date getDate(String website, Element e) {
-//        try {
-//            return new SimpleDateFormat(sitesTemplates.getSitesTemplate().get(website).getDateFormatString()).parse(e.getElementsByTag("pubDate").text());
-//        } catch (ParseException e1) {
-//            e1.printStackTrace();
-//        }
-        return new Date(117, 10, 2, 3, 4, 5);
+    private Date getDate(String website, String e)  {
+        try {
+            return  siteTemplates.getTemplateByName(website).getDateFormater().parse(e);
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 
 
-    public News[] getAllNews() throws IOException {
+    public List<News> getAllNews()  {
         Elements elements = document.getElementsByTag("item");
         ArrayList<News> newses = new ArrayList<>();
         for (Element e : elements) {
             newses.add(news(e));
         }
-        return newses.toArray(new News[0]);
+        return newses;
     }
 
     private String getContent(String url) {
-//        String key = url.split("/")[2];
-//        Template template = sitesTemplates.getSitesTemplate().get(key);
-//        String str = null;
-//        try {
-//            Document document = Jsoup.connect(url).validateTLSCertificates(false).get();
-//            Method method = Document.class.getMethod(template.getFuncName(), String.class);
-//            Object o = method.invoke(document, template.getKeyValue());
-//            if (o instanceof Elements) {
-//                str = ((Elements) o).text();
-//
-//            } else if (o instanceof Element) {
-//                str = ((Element) o).text();
-//
-//            }
-//
-//        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | IOException e) {
-//            e.printStackTrace();
-//        }
-//        return str;
-        return "TBD";
+        String website = url.split("/")[2];
+        Template template = siteTemplates.getTemplateByName(website);
+        String newsContent = null;
+        try {
+            Document document = Jsoup.connect(url).validateTLSCertificates(false).get();
+            Method method = Document.class.getMethod(template.getFuncName(), String.class);
+            Object o = method.invoke(document, template.getKeyValue());
+            if (o instanceof Elements) {
+                newsContent = ((Elements) o).text();
+
+            } else if (o instanceof Element) {
+                newsContent = ((Element) o).text();
+
+            }
+
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | IOException e) {
+            e.printStackTrace();
+        }
+        return newsContent;
     }
 }
