@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 
 public class DatabaseWriter extends DatabaseStream {
 
-    public DatabaseWriter(String userName, String password) {
+    public DatabaseWriter() {
         super();
     }
 

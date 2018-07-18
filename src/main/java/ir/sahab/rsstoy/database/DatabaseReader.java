@@ -11,10 +11,6 @@ import java.util.List;
 
 public class DatabaseReader extends DatabaseStream {
 
-    public DatabaseReader(String userName, String password) {
-        super();
-    }
-
     public List<News> getAllNews() throws SQLException {
         return getNewsByCondition("", "");
     }

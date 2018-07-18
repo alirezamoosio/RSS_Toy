@@ -8,8 +8,8 @@ import java.sql.SQLException;
 
 public abstract class DatabaseStream {
     Connection connection;
-    private static final String DB_NAME = "NewsDB";
-    private static final String DB_URL = "jdbc:mysql://localhost/?&useSSL=false";
+    static final String DB_NAME = "NewsDB";
+    static final String DB_URL = "jdbc:mysql://localhost/?&useSSL=false";
     static final String SITE_TABLE = "Websites";
     static ComboPooledDataSource source;
 

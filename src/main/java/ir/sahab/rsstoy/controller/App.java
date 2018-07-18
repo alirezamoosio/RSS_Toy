@@ -33,14 +33,7 @@ public class App {
     public static void main(String[] args) throws IOException {
         SiteTemplates.init();
         App app = new App();
-        Thread updateThread = new Thread(() -> {
-            try {
-                Thread.sleep(60 * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            app.update();
-        }, "Update thread");
+        UpdateThread updateThread = new UpdateThread(app);
         updateThread.setDaemon(true);
         updateThread.start();
         ShellFactory.createConsoleShell("rss: ", "RSSFeed", app).commandLoop();
@@ -65,7 +58,7 @@ public class App {
     @Command(name = "showTop", description = "show top news")
     public void showTop(@Param(name = "WebsiteName") String websiteName, @Param(name = "Number") int number) {
         try {
-            DatabaseReader reader = new DatabaseReader("guest", "1234");
+            DatabaseReader reader = new DatabaseReader();
             List<News> news = reader.getLastNews(websiteName, number);
             printNewsList(news);
             reader.close();
@@ -77,7 +70,7 @@ public class App {
     @Command(name = "searchContent", description = "Search in news content")
     public void searchContent(@Param(name = "query") String query) {
         try {
-            DatabaseReader reader = new DatabaseReader("guest", "1234");
+            DatabaseReader reader = new DatabaseReader();
             List<News> news = reader.getNewsByContentSearch(query);
             printNewsList(news);
             reader.close();
@@ -89,7 +82,7 @@ public class App {
     @Command(name = "searchTitle", description = "Search in news titles")
     public void searchTitle(@Param(name = "query") String query) {
         try {
-            DatabaseReader reader = new DatabaseReader("guest", "1234");
+            DatabaseReader reader = new DatabaseReader();
             List<News> news = reader.getNewsByTitleSearch(query);
             printNewsList(news);
             reader.close();
@@ -98,10 +91,10 @@ public class App {
         }
     }
 
-    @Command(name = "show by date", description = "shows by date")
+    @Command(name = "show‌ByDate", description = "shows by date")
     public void showByDate(@Param(name = "WebsiteName") String websiteName, @Param(name = "Date") String dateFormat) {
         try {
-            DatabaseReader reader = new DatabaseReader("guest", "1234");
+            DatabaseReader reader = new DatabaseReader();
             List<News> news = reader.getNewsByDate(websiteName, dateFormat);
             printNewsList(news);
             reader.close();
@@ -125,13 +118,12 @@ public class App {
             System.out.println(eachNews);
     }
 
-    private void update() {
-        DatabaseWriter writer = new DatabaseWriter("guest", "1234");
+    void update() {
         LinkedHashMap<String, Template> websites = SiteTemplates.getInstance().getSiteTemplates();
-
         websites.forEach((key, value) -> {
             NewsFetcher fetcher = new NewsFetcher(key);
             executor.execute(fetcher);
+            System.out.println("executor executed");
         });
     }
 }
@@ -146,7 +138,7 @@ class NewsFetcher implements Runnable {
     @Override
     public void run() {
         List<News> news = new FeedParser(websiteName).getAllNews();
-        DatabaseWriter writer = new DatabaseWriter("guest", "1234");
+        DatabaseWriter writer = new DatabaseWriter();
         for (News eachNews : news) {
             try {
                 writer.write(eachNews);
@@ -155,6 +147,27 @@ class NewsFetcher implements Runnable {
                     e.printStackTrace();
                 break;
             }
+        }
+    }
+}
+
+class UpdateThread extends Thread {
+    private App app;
+
+    UpdateThread(App app) {
+        this.app = app;
+    }
+
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            app.update();
         }
     }
 }
