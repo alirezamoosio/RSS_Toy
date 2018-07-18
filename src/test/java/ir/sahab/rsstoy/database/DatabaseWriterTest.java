@@ -16,14 +16,15 @@ public class DatabaseWriterTest {
     private Statement statement;
 
     @BeforeClass
-    public static void createTable() throws SQLException {
+    public static void init() throws SQLException {
         connection = DriverManager.getConnection(DatabaseStream.DB_URL, "guest", "1234");
         Statement statement = connection.createStatement();
         statement.executeUpdate("use " + DatabaseStream.DB_NAME);
+        statement.close();
     }
 
     @Before
-    public void before() throws SQLException {
+    public void setUp() throws SQLException {
         statement = connection.createStatement();
         writer = new DatabaseWriter();
     }
@@ -49,7 +50,8 @@ public class DatabaseWriterTest {
     }
 
     @After
-    public void after() throws SQLException {
+    public void tearDown() throws SQLException {
+        writer.close();
         statement.executeUpdate("DROP TABLE IF EXISTS test_website");
         statement.close();
     }

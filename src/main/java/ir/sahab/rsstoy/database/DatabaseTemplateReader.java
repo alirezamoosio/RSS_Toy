@@ -8,9 +8,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
 public class DatabaseTemplateReader extends DatabaseStream {
-    public DatabaseTemplateReader(String userName, String password) {
-        super();
-    }
 
     public void load(LinkedHashMap<String, Template> siteTemplates) throws SQLException {
         PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + SITE_TABLE);

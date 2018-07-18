@@ -5,7 +5,6 @@ import ir.sahab.rsstoy.database.DatabaseTemplateWriter;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.Set;
 
 public class SiteTemplates {
     private static SiteTemplates ourInstance;
@@ -31,7 +30,7 @@ public class SiteTemplates {
 
     public void add(String websiteName, Template template) {
         try {
-            DatabaseTemplateWriter writer = new DatabaseTemplateWriter("guest", "1234");
+            DatabaseTemplateWriter writer = new DatabaseTemplateWriter();
             writer.add(websiteName, template);
             siteTemplates.put(websiteName, template);
             writer.close();
@@ -42,7 +41,7 @@ public class SiteTemplates {
 
     public void remove(String websiteName) {
         try {
-            DatabaseTemplateWriter writer = new DatabaseTemplateWriter("guest", "1234");
+            DatabaseTemplateWriter writer = new DatabaseTemplateWriter();
             writer.remove(websiteName);
             siteTemplates.remove(websiteName);
             writer.close();
@@ -53,7 +52,7 @@ public class SiteTemplates {
 
     private SiteTemplates() {
         try {
-            DatabaseTemplateReader reader = new DatabaseTemplateReader("guest", "1234");
+            DatabaseTemplateReader reader = new DatabaseTemplateReader();
             reader.load(siteTemplates);
             reader.close();
         } catch (SQLException e) {

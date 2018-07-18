@@ -7,10 +7,6 @@ import java.sql.SQLException;
 
 public class DatabaseTemplateWriter extends DatabaseStream {
 
-    public DatabaseTemplateWriter(String userName, String password) {
-        super();
-    }
-
     public void add(String websiteName, Template template) throws SQLException {
         websiteName = websiteName.replace(" ", "_");
         PreparedStatement statement = connection.prepareStatement("INSERT INTO " + SITE_TABLE + " VALUES (?, ?, ?, ?, ?, ?)");
