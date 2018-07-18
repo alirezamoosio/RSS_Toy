@@ -1,35 +1,41 @@
 package ir.sahab.rsstoy.database;
 
-import ir.sahab.rsstoy.template.Template;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public abstract class DatabaseStream {
     Connection connection;
     private static final String DB_NAME = "NewsDB";
     private static final String DB_URL = "jdbc:mysql://localhost/?&useSSL=false";
     static final String SITE_TABLE = "Websites";
+    static ComboPooledDataSource source;
 
     static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        source = new ComboPooledDataSource();
+        source.setJdbcUrl(DB_URL);
+        source.setUser("guest");
+        source.setPassword("1234");
+        source.setInitialPoolSize(5);
+        source.setMinPoolSize(5);
+        source.setAcquireIncrement(5);
+        source.setMaxPoolSize(5);
+        source.setMaxStatements(100);
     }
 
-    DatabaseStream(String userName, String password) {
+    DatabaseStream() {
         try {
-            connection = DriverManager.getConnection(DB_URL, userName, password);
-            Statement statement = connection.createStatement();
-            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
-            statement.executeUpdate("use " + DB_NAME);
-            statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + SITE_TABLE
-            + " (ID INTEGER , WebsiteName VARCHAR(100), AttName VARCHAR (100), FuncName VARCHAR(100)," +
+            connection = source.getConnection();
+            PreparedStatement statement = connection.prepareStatement("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
+            statement.executeUpdate();
+            statement = connection.prepareStatement("use " + DB_NAME);
+            statement.executeUpdate();
+            statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + SITE_TABLE +
+                    " (ID INTEGER, WebsiteName VARCHAR (100), AttName VARCHAR (100), FuncName VARCHAR (100)," +
                     " RSSLink VARCHAR (1000), DateFormat VARCHAR (100), PRIMARY KEY (ID))");
+            statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();

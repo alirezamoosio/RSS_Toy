@@ -2,9 +2,9 @@ package ir.sahab.rsstoy.database;
 
 import ir.sahab.rsstoy.content.News;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class DatabaseReader extends DatabaseStream {
 
     public DatabaseReader(String userName, String password) {
-        super(userName, password);
+        super();
     }
 
     public List<News> getAllNews() throws SQLException {
@@ -47,14 +47,14 @@ public class DatabaseReader extends DatabaseStream {
 
     private List<News> getNewsByCondition(String websiteCondition, String newsCondition) throws SQLException {
         List<News> list = new ArrayList<>();
-        Statement statement = connection.createStatement();
-        ResultSet sitesSet = statement.executeQuery("SELECT * FROM " + SITE_TABLE + " " + websiteCondition);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + SITE_TABLE + " " + websiteCondition);
+        ResultSet sitesSet = statement.executeQuery();
         while (sitesSet.next()) {
             String websiteName = sitesSet.getString("WebsiteName");
-            Statement otherStatement = connection.createStatement();
-            ResultSet newsSet = otherStatement.executeQuery("SELECT * FROM " + websiteName.replace(" ", "_") + " " + newsCondition);
+            PreparedStatement otherStatement = connection.prepareStatement("SELECT * FROM " + websiteName.replace(" ", "_") + " " + newsCondition);
+            ResultSet newsSet = otherStatement.executeQuery();
             while (newsSet.next()) {
-                list.add(fromResultSet(newsSet));
+                list.add(fromResultSet(newsSet, websiteName));
             }
             otherStatement.close();
         }
@@ -62,15 +62,15 @@ public class DatabaseReader extends DatabaseStream {
         return list;
     }
 
-    private News fromResultSet(ResultSet resultSet) throws SQLException {
-        String title, author, description, content;
+    private News fromResultSet(ResultSet resultSet, String websiteName) throws SQLException {
+        String title, author, description, content, website;
         Date date;
         title = resultSet.getString("Title");
         author = resultSet.getString("Author");
         description = resultSet.getString("Description");
         content = resultSet.getString("Content");
         date = resultSet.getDate("PubDate");
-        return News.newNews().title(title).author(author).date(date)
+        return News.newNews().title(title).author(author).date(date).website(websiteName)
                 .description(description).content(content).build();
     }
 }

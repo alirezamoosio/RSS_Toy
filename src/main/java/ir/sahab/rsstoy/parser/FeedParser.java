@@ -45,7 +45,9 @@ public class FeedParser {
         String author = element.getElementsByTag("author").text();
         String description = element.getElementsByTag("description").text();
         String website = websiteName;
-        return new News(title, author, description, getContent(link), website, link, getDate(website, element.getElementsByTag("pubDate").get(0).text()));
+        return News.newNews().title(title).author(author).date(getDate(website, element.getElementsByTag("pubDate").get(0).text()))
+                .website(website).description(description).content(getContent(link)).build();
+//        return new News(title, author, description, getContent(link), website, link, getDate(website, element.getElementsByTag("pubDate").get(0).text()));
     }
 
     private Date getDate(String website, String e) {
@@ -63,6 +65,9 @@ public class FeedParser {
         ArrayList<News> newses = new ArrayList<>();
         for (Element e : elements) {
             newses.add(news(e));
+            // TODO: 7/18/18 next lines are only for debugging
+            if (newses.size() > 50)
+                break;
         }
         return newses;
     }

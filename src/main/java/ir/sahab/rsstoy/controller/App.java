@@ -1,6 +1,9 @@
 package ir.sahab.rsstoy.controller;
 
 
+import asg.cliche.Command;
+import asg.cliche.Param;
+import asg.cliche.ShellFactory;
 import ir.sahab.rsstoy.content.News;
 import ir.sahab.rsstoy.database.DatabaseReader;
 import ir.sahab.rsstoy.database.DatabaseWriter;
@@ -11,70 +14,41 @@ import ir.sahab.rsstoy.template.TemplateFinder;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * RSS Toy
  */
 public class App {
+    private ExecutorService executor;
 
     private App() {
+        executor = Executors.newFixedThreadPool(5);
     }
 
-    public static void main(String[] args) throws IOException, SQLException {
-        App app = new App();
+    public static void main(String[] args) throws IOException {
         SiteTemplates.init();
-        String input = "";
-        Scanner scanner = new Scanner(System.in);
-        while (!input.equals("exit")) {
-            input = scanner.nextLine();
-            app.inputHandler(input);
-        }
+        App app = new App();
+        Thread updateThread = new Thread(() -> {
+            try {
+                Thread.sleep(60 * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            app.update();
+        }, "Update thread");
+        updateThread.setDaemon(true);
+        updateThread.start();
+        ShellFactory.createConsoleShell("rss: ", "RSSFeed", app).commandLoop();
+        app.executor.shutdown();
     }
 
-    private void inputHandler(String input) {
-        Pattern addSite = Pattern.compile("add (\\X+) (\\S+)");
-        Pattern removeSite = Pattern.compile("remove (\\X+)");
-        Pattern showTop = Pattern.compile("show top (\\d+) (\\X+)");
-        Pattern searchContent = Pattern.compile("search content (\\X+)");
-        Pattern searchTitle = Pattern.compile("search title (\\X+)");
-        Pattern showByDate = Pattern.compile("show date (\\X+) (\\w+)");
-        Pattern refresh = Pattern.compile("refresh");
-        Matcher matcher = addSite.matcher(input);
-        if (matcher.find()) {
-            addSite(matcher.group(1), matcher.group(2));
-        }
-        matcher = removeSite.matcher(input);
-        if (matcher.find()) {
-            removeSite(matcher.group(1));
-        }
-        matcher = showTop.matcher(input);
-        if (matcher.find()) {
-            showTop(matcher.group(2), Integer.parseInt(matcher.group(1)));
-        }
-        matcher = searchContent.matcher(input);
-        if (matcher.find()) {
-            searchContent(matcher.group(1));
-        }
-        matcher = searchTitle.matcher(input);
-        if (matcher.find()) {
-            searchTitle(matcher.group(1));
-        }
-        matcher = showByDate.matcher(input);
-        if (matcher.find()) {
-            showByDate(matcher.group(1), matcher.group(2));
-        }
-        matcher = refresh.matcher(input);
-        if (matcher.find()) {
-            refresh();
-        }
-    }
-
-    private void addSite(String websiteName, String rssFeed) {
+    @Command(name = "add", description = "Register a new website")
+    public void addSite(@Param(name = "WebsiteName") String websiteName, @Param(name = "rssLink") String rssFeed) {
         try {
             Template template = TemplateFinder.findTemplate(rssFeed);
             SiteTemplates.getInstance().add(websiteName, template);
@@ -83,11 +57,13 @@ public class App {
         }
     }
 
-    private void removeSite(String websiteName) {
+    @Command(name = "remove", description = "Remove a website")
+    public void removeSite(@Param(name = "WebsiteName") String websiteName) {
         SiteTemplates.getInstance().remove(websiteName);
     }
 
-    private void showTop(String websiteName, int number) {
+    @Command(name = "showTop", description = "show top news")
+    public void showTop(@Param(name = "WebsiteName") String websiteName, @Param(name = "Number") int number) {
         try {
             DatabaseReader reader = new DatabaseReader("guest", "1234");
             List<News> news = reader.getLastNews(websiteName, number);
@@ -98,7 +74,8 @@ public class App {
         }
     }
 
-    private void searchContent(String query) {
+    @Command(name = "searchContent", description = "Search in news content")
+    public void searchContent(@Param(name = "query") String query) {
         try {
             DatabaseReader reader = new DatabaseReader("guest", "1234");
             List<News> news = reader.getNewsByContentSearch(query);
@@ -109,7 +86,8 @@ public class App {
         }
     }
 
-    private void searchTitle(String query) {
+    @Command(name = "searchTitle", description = "Search in news titles")
+    public void searchTitle(@Param(name = "query") String query) {
         try {
             DatabaseReader reader = new DatabaseReader("guest", "1234");
             List<News> news = reader.getNewsByTitleSearch(query);
@@ -120,7 +98,8 @@ public class App {
         }
     }
 
-    private void showByDate(String websiteName, String dateFormat) {
+    @Command(name = "show by date", description = "shows by date")
+    public void showByDate(@Param(name = "WebsiteName") String websiteName, @Param(name = "Date") String dateFormat) {
         try {
             DatabaseReader reader = new DatabaseReader("guest", "1234");
             List<News> news = reader.getNewsByDate(websiteName, dateFormat);
@@ -131,13 +110,14 @@ public class App {
         }
     }
 
-    private void refresh() {
+    @Command(name = "refresh", description = "fetches new messages")
+    public void refresh() {
         update();
-        System.err.println("refresh successful");
     }
 
-    private void shutDown() {
-        // TODO: 7/16/18 Implement
+    @Command(name = "forceQuit", description = "kills the app with exit(0)")
+    public void forceQuit() {
+        System.exit(0);
     }
 
     private void printNewsList(List<News> news) {
@@ -148,16 +128,33 @@ public class App {
     private void update() {
         DatabaseWriter writer = new DatabaseWriter("guest", "1234");
         LinkedHashMap<String, Template> websites = SiteTemplates.getInstance().getSiteTemplates();
+
         websites.forEach((key, value) -> {
-            List<News> news = new FeedParser(key).getAllNews();
-            for (News eachNews : news) {
-                try {
-                    writer.write(eachNews);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    break;
-                }
-            }
+            NewsFetcher fetcher = new NewsFetcher(key);
+            executor.execute(fetcher);
         });
+    }
+}
+
+class NewsFetcher implements Runnable {
+    private String websiteName;
+
+    public NewsFetcher(String websiteName) {
+        this.websiteName = websiteName;
+    }
+
+    @Override
+    public void run() {
+        List<News> news = new FeedParser(websiteName).getAllNews();
+        DatabaseWriter writer = new DatabaseWriter("guest", "1234");
+        for (News eachNews : news) {
+            try {
+                writer.write(eachNews);
+            } catch (SQLException e) {
+                if (!(e instanceof SQLIntegrityConstraintViolationException))
+                    e.printStackTrace();
+                break;
+            }
+        }
     }
 }
