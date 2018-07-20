@@ -39,7 +39,7 @@ public class SiteTemplates {
         }
     }
 
-    public void remove(String websiteName) {
+    public void remove(String websiteName) throws IllegalAccessException {
         try {
             DatabaseTemplateWriter writer = new DatabaseTemplateWriter();
             writer.remove(websiteName);

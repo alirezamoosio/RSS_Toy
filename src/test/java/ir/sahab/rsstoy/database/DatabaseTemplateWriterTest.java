@@ -3,6 +3,7 @@ package ir.sahab.rsstoy.database;
 import ir.sahab.rsstoy.template.Template;
 import org.junit.*;
 
+import javax.xml.crypto.Data;
 import java.sql.*;
 
 import static org.junit.Assert.*;
@@ -14,7 +15,7 @@ public class DatabaseTemplateWriterTest {
 
     @BeforeClass
     public static void init() throws SQLException {
-        connection = DriverManager.getConnection(DatabaseReader.DB_URL, "guest", "1234");
+        connection = DriverManager.getConnection(DatabaseReader.DB_URL, DatabaseStream.DB_USERNAME, DatabaseStream.DB_PASS);
         Statement statement = connection.createStatement();
         statement.executeUpdate("use " + DatabaseReader.DB_NAME);
         statement.close();
@@ -41,7 +42,7 @@ public class DatabaseTemplateWriterTest {
     }
 
     @Test
-    public void remove() throws SQLException {
+    public void remove() throws SQLException, IllegalAccessException {
         statement.executeUpdate("INSERT INTO " + DatabaseStream.SITE_TABLE + " (ID, WebsiteName) " +
                 "VALUES (" + "test_site".hashCode() + ", 'test_site')");
         writer.remove("test site");

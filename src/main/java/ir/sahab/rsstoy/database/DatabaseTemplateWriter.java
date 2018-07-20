@@ -20,11 +20,13 @@ public class DatabaseTemplateWriter extends DatabaseStream {
         statement.close();
     }
 
-    public void remove(String websiteName) throws SQLException {
+    public void remove(String websiteName) throws SQLException, IllegalAccessException {
         PreparedStatement statement = connection.prepareStatement("DROP TABLE IF EXISTS " + websiteName.replace(" ", "_"));
         statement.executeUpdate();
         statement = connection.prepareStatement("DELETE FROM " + SITE_TABLE + " WHERE WebsiteName = ?");
         statement.setString(1, websiteName.replace(" ", "_"));
-        statement.executeUpdate();
+        int result = statement.executeUpdate();
+        if (result == 0)
+            throw new IllegalAccessException();
     }
 }

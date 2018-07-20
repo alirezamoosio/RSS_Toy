@@ -3,6 +3,7 @@ package ir.sahab.rsstoy.database;
 import ir.sahab.rsstoy.content.News;
 import org.junit.*;
 
+import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ public class DatabaseReaderTest {
 
     @BeforeClass
     public static void init() throws SQLException {
-        connection = DriverManager.getConnection(DatabaseStream.DB_URL, "guest", "1234");
+        connection = DriverManager.getConnection(DatabaseStream.DB_URL, DatabaseStream.DB_USERNAME, DatabaseStream.DB_PASS);
         Statement statement = connection.createStatement();
         statement.executeUpdate("use " + DatabaseStream.DB_NAME);
         statement.executeUpdate("CREATE TABLE IF NOT EXISTS test_website_1 " +
@@ -46,7 +47,7 @@ public class DatabaseReaderTest {
     }
 
     @Test
-    public void getAllNews() throws SQLException {
+    public void getAllNews() throws SQLException, IllegalAccessException {
         List<News> list = reader.getAllNews();
         assertEquals("title1", list.get(0).getTitle());
         assertEquals("title2", list.get(1).getTitle());
@@ -54,13 +55,13 @@ public class DatabaseReaderTest {
     }
 
     @Test
-    public void getNewsByExactTitle() throws SQLException {
+    public void getNewsByExactTitle() throws SQLException, IllegalAccessException {
         List<News> list = reader.getNewsByExactTitle("title1");
         assertEquals("title1", list.get(0).getTitle());
     }
 
     @Test
-    public void getNewsByTitleSearch() throws SQLException {
+    public void getNewsByTitleSearch() throws SQLException, IllegalAccessException {
         List<News> list = reader.getNewsByTitleSearch("2");
         assertEquals("title2", list.get(0).getTitle());
         list = reader.getNewsByTitleSearch("title");
@@ -70,7 +71,7 @@ public class DatabaseReaderTest {
     }
 
     @Test
-    public void getNewsByContentSearch() throws SQLException {
+    public void getNewsByContentSearch() throws SQLException, IllegalAccessException {
         List<News> list = reader.getNewsByContentSearch("3");
         assertEquals("title3", list.get(0).getTitle());
         list = reader.getNewsByContentSearch("content");
@@ -80,14 +81,14 @@ public class DatabaseReaderTest {
     }
 
     @Test
-    public void getLastNews() throws SQLException {
+    public void getLastNews() throws SQLException, IllegalAccessException {
         List<News> list = reader.getLastNews("test_website_1", 1);
         assertEquals("title2", list.get(0).getTitle());
         assertEquals(1, list.size());
     }
 
     @Test
-    public void getNewsByDate() throws SQLException {
+    public void getNewsByDate() throws SQLException, IllegalAccessException {
         List<News> list = reader.getNewsByDate("test_website_1", "2018-01-02");
         assertEquals("title1", list.get(0).getTitle());
         assertEquals(1, list.size());

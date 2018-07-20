@@ -5,7 +5,9 @@ import ir.sahab.rsstoy.template.Template;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class DatabaseTemplateReader extends DatabaseStream {
 
@@ -24,5 +26,15 @@ public class DatabaseTemplateReader extends DatabaseStream {
             siteTemplates.put(websiteName, template);
         }
         statement.close();
+    }
+
+    public List<String> getAllWebsites() throws SQLException {
+        List<String> websites = new ArrayList<>();
+        PreparedStatement statement = connection.prepareStatement("SELECT WebsiteName FROM " + SITE_TABLE);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            websites.add(resultSet.getString("WebsiteName"));
+        }
+        return websites;
     }
 }

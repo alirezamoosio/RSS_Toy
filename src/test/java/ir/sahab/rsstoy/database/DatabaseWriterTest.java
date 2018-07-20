@@ -17,7 +17,7 @@ public class DatabaseWriterTest {
 
     @BeforeClass
     public static void init() throws SQLException {
-        connection = DriverManager.getConnection(DatabaseStream.DB_URL, "guest", "1234");
+        connection = DriverManager.getConnection(DatabaseStream.DB_URL, DatabaseStream.DB_USERNAME, DatabaseStream.DB_PASS);
         Statement statement = connection.createStatement();
         statement.executeUpdate("use " + DatabaseStream.DB_NAME);
         statement.close();
