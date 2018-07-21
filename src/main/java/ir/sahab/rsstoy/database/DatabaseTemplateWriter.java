@@ -12,7 +12,7 @@ public class DatabaseTemplateWriter extends DatabaseStream {
         PreparedStatement statement = connection.prepareStatement("INSERT INTO " + SITE_TABLE + " VALUES (?, ?, ?, ?, ?, ?)");
         statement.setInt(1, websiteName.hashCode());
         statement.setString(2, websiteName);
-        statement.setString(3, template.getAttName());
+        statement.setString(3, template.getAttValue());
         statement.setString(4, template.getFuncName());
         statement.setString(5, template.getRssLink());
         statement.setString(6, template.getDateFormatString());

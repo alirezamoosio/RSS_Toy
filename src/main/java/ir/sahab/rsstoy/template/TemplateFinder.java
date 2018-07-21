@@ -1,6 +1,6 @@
 package ir.sahab.rsstoy.template;
 
-import org.jsoup.Jsoup;
+import ir.sahab.rsstoy.Util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -10,9 +10,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static java.lang.Math.min;
+
 public class TemplateFinder {
     public static Template findTemplate(String rss) throws IOException {
-        Document rssDoc = Jsoup.connect(rss).validateTLSCertificates(false).get();
+        try {
+            return work(rss);
+        }catch (RuntimeException err){
+            if (err.getMessage().equals("connection failed"))
+                throw new  IOException();
+            else
+                throw err;
+        }
+    }
+
+    private static Template work(String rss) {
+        Document rssDoc = Util.getPage(rss);
         Document goodPage = findMaxTextPage(rssDoc);
         String dateFormat = findDateFormat(rssDoc);
         String newsBodyAddress = findBodyAddress(goodPage);
@@ -20,7 +33,6 @@ public class TemplateFinder {
     }
 
     private static String findBodyAddress(Document goodPage) {
-
         ArrayList<MyElement> myElements = new ArrayList<>();
         Elements classElements = goodPage.getElementsByAttribute("class");
         for (int i = 0; i < classElements.size(); i++) {
@@ -32,7 +44,6 @@ public class TemplateFinder {
         Collections.reverse(myElements);
         Collections.sort(myElements);
         Collections.reverse(myElements);
-
         for (int i = 0; i < myElements.size() / 5; i++) {
             if (!myElements.get(i).getElement().text().contains(myElements.get(i + 1).getElement().text())) {
                 return myElements.get(i).getElement().className();
@@ -40,23 +51,21 @@ public class TemplateFinder {
         }
         return null;
     }
-
     private static String findDateFormat(Document rssDoc) {
         Elements elementsOfPubDate = rssDoc.getElementsByTag("pubDate");
         return DateFomatFinder.parse(elementsOfPubDate.get(0).text());
     }
-
-    private static Document findMaxTextPage(Document rssDoc) throws IOException {
+    private static Document findMaxTextPage(Document rssDoc) {
         Elements elementsOfLinks = rssDoc.getElementsByTag("link");
         Document maxTextPage = null;
-        Document tempDoc;
         int maxTextSize = -1;
-        for (int i = 4; i < elementsOfLinks.size() / 4; i++) {
-            Element element = elementsOfLinks.get(i);
-            tempDoc = Jsoup.connect(element.text()).validateTLSCertificates(false).get();
-            if (tempDoc.text().length() > maxTextSize) {
-                maxTextSize = tempDoc.text().length();
-                maxTextPage = tempDoc;
+        ArrayList<Document> documentArrayList=new ArrayList<>();
+        elementsOfLinks.subList(4,min(20,elementsOfLinks.size())).parallelStream().forEach(
+                element-> documentArrayList.add(Util.getPage(element.text())));
+        for (Document document : documentArrayList) {
+            if (document.text().length() > maxTextSize) {
+                maxTextSize = document.text().length();
+                maxTextPage=document;
             }
         }
         return maxTextPage;

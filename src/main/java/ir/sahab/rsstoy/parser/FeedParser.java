@@ -72,14 +72,14 @@ public class FeedParser {
         return newses;
     }
 
-    private String getContent(String url) {
+    public String getContent(String url) {
         String website = websiteName;
         Template template = siteTemplates.getTemplateByName(website);
         String newsContent = null;
         try {
             Document document = Jsoup.connect(url).validateTLSCertificates(false).get();
             Method method = Document.class.getMethod(template.getFuncName(), String.class);
-            Object o = method.invoke(document, template.getAttName());
+            Object o = method.invoke(document, template.getAttValue());
             if (o instanceof Elements) {
                 newsContent = ((Elements) o).text();
 
